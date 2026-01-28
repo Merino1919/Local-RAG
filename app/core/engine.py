@@ -6,7 +6,6 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.agents import create_agent
 from langchain_core.tools import tool
 
-# Importamos tus utils
 from app.utils.embeddings import get_embeddings_model
 from app.utils.parsers import select_loader
 
