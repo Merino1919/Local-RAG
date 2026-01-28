@@ -3,39 +3,39 @@ import requests
 
 st.set_page_config(page_title="IA Local - Analista de Documentos", layout="wide")
 
-st.title("📂 Analista de Documentos Sensibles (Privado)")
-st.sidebar.header("Configuración")
-api_url = st.sidebar.text_input("URL de la API", "http://localhost:8000/api/v1")
+st.title("Sensitive documents analyst (private deployment)")
+st.sidebar.header("Config")
+api_url = st.sidebar.text_input("API URL", "http://localhost:8000/api/v1")
 
-# --- Sección de Carga ---
-st.subheader("1. Subir Documentación")
-uploaded_file = st.file_uploader("Sube un PDF o Excel", type=["pdf", "xlsx", "xls"])
+# --- Upload section ---
+st.subheader("1. Documentation upload")
+uploaded_file = st.file_uploader("Upload a PDF or an Excel file", type=["pdf", "xlsx", "xls"])
 
-if st.button("Procesar Documento"):
+if st.button("Process document"):
     if uploaded_file:
         files = {"file": uploaded_file.getvalue()}
-        with st.spinner("Analizando y vectorizando..."):
+        with st.spinner("Analyzing and vectorizing..."):
             res = requests.post(f"{api_url}/upload", files={"file": (uploaded_file.name, uploaded_file.getvalue())})
             if res.status_code == 200:
-                st.success("¡Documento listo para consultas!")
+                st.success("Document ready for queries!")
             else:
-                st.error("Error al procesar.")
+                st.error("Error while processing.")
 
-# --- Sección de Chat ---
+# --- Chat section ---
 st.divider()
-st.subheader("2. Consultar Información")
-user_input = st.text_input("Haz una pregunta sobre los documentos:")
+st.subheader("2. Information checking")
+user_input = st.text_input("Ask a question about the provided documents:")
 
-if st.button("Preguntar"):
+if st.button("Ask"):
     if user_input:
-        with st.spinner("Pensando..."):
+        with st.spinner("Thinking..."):
             res = requests.post(f"{api_url}/query", params={"question": user_input})
             if res.status_code == 200:
                 data = res.json()
-                st.markdown(f"**Respuesta:** {data['answer']}")
+                st.markdown(f"**Answer:** {data['answer']}")
                 
-                with st.expander("Ver fuentes consultadas"):
+                with st.expander("Check employed sources"):
                     for source in set(data['sources']):
                         st.caption(f"- {source}")
             else:
-                st.error("La API no pudo responder.")
+                st.error("API was not reachable.")
